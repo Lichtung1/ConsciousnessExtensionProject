@@ -62,14 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial BBS state
     let state = {
-        screen: 'welcomeScreen', // Changed from 'mainMenu' to 'welcomeScreen'
+        screen: 'welcomeScreen', 
         authenticated: false,
         loggedIn: false,
         username: '',
         password: '',
-        userType: 'guest', // 'guest' or 'registered'
-        hasNewMessageGuest: false, // For guest users
-        hasNewMessageRegistered: true, // For registered users
+        userType: 'guest', 
+        hasNewMessageGuest: false, 
+        hasNewMessageRegistered: true, 
         progress: {
             accessedResearchFiles: false,
             triggeredTheseusEvent: false,
@@ -116,7 +116,6 @@ Press Enter to join
             researchFilesData = await researchResponse.json();
             forumThreadsData = await forumResponse.json();
     
-            // After data is loaded, change screen state and display the main menu
             state.screen = 'mainMenu';
             displayMainMenu();
         } catch (error) {
@@ -151,7 +150,7 @@ Press Enter to join
     document.addEventListener('keydown', (e) => {
         if (state.exiting) {
             e.preventDefault();
-            return; // Do nothing if we're in the exiting state
+            return; // Do nothing if were in the exiting state
         }
     
         if (e.key === 'Enter') {
