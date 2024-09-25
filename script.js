@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let historyIndex = 0;
 
     // Sound effects
-    
     const keypressSound = new Audio('sound/keypress.mp3');
     const glitchSound = new Audio('sound/glitch.mp3');
     const accessGrantedSound = new Audio('sound/sucess.mp3');
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ambientSound.volume = 0.2; // Adjust volume as needed
     ambientSound.loop = true;
-    ambientSound.play();
     
 
     // ANSI Art animation
@@ -64,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial BBS state
     let state = {
-        screen: 'mainMenu',
+        screen: 'welcomeScreen', // Changed from 'mainMenu' to 'welcomeScreen'
         authenticated: false,
         loggedIn: false,
         username: '',
@@ -79,6 +77,20 @@ document.addEventListener('DOMContentLoaded', () => {
         newThread: null,
         exiting: false 
     };
+    
+    // Display welcome screen
+    displayWelcomeScreen();
+
+    function displayWelcomeScreen() {
+        bbsContent.innerText = `
+Welcome to The Consciousness Extension Project BBS
+
+Press Enter to join
+        `;
+        prompt.innerText = '';
+        scrollToBottom();
+        focusInput();
+    }
 
     // Load data from JSON files
     async function loadData() {
@@ -88,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch('data/research_files.json'),
                 fetch('data/forum_threads.json')
             ]);
-
+    
             // Verify that responses are OK
             if (!messagesResponse.ok) {
                 throw new Error(`Failed to load messages.json: ${messagesResponse.statusText}`);
@@ -99,12 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!forumResponse.ok) {
                 throw new Error(`Failed to load forum_threads.json: ${forumResponse.statusText}`);
             }
-
+    
             messagesData = await messagesResponse.json();
             researchFilesData = await researchResponse.json();
             forumThreadsData = await forumResponse.json();
-
-            // After data is loaded, display the main menu
+    
+            // After data is loaded, change screen state and display the main menu
+            state.screen = 'mainMenu';
             displayMainMenu();
         } catch (error) {
             console.error('Error loading data:', error);
@@ -112,8 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Start loading data
-    loadData();
 
     // Focus on the input line
     userInput.focus();
@@ -174,6 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function processInput(input) {
+        if (state.screen === 'welcomeScreen') {
+            ambientSound.play();
+            loadData(); // Start loading data when user presses Enter on welcome screen
+            return;
+        }
+    
         // Handle hidden commands
         if (input.toLowerCase() === 'theseus') {
             triggerTheseusEvent();
@@ -312,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function promptPassword() {
         state.screen = 'passwordPuzzle';
-        bbsContent.innerText = '\nAccess to Research Files requires solving this puzzle:\n\nDecode the following hexadecimal string to find the password:\n\n"68 79 70 65 72 36 36"\n\nEnter the password: ';
+        bbsContent.innerText = '\nAccess to Research Files are password protected.\n\nEnter the password: ';
         prompt.innerText = '';
     }
 
