@@ -1,0 +1,140 @@
+body {
+    background-color: black;
+    color: rgb(0, 247, 255); /* Light blue text */
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#container {
+    width: 100%;
+    max-width: 600px; /* Adjust this value to match your desired content width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid rgb(0, 247, 255); /* Border around the entire container */
+    margin-top: 20px; /* Add some space at the top */
+}
+
+header {
+    width: 100%;
+    border-bottom: 2px solid rgb(0, 247, 255); /* Border below the header */
+}
+
+#header-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#bbs-interface {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#bbs-content {
+    padding: 20px;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+#input-line {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 20px 20px;
+}
+
+#prompt {
+    margin-right: 5px;
+}
+
+#user-input {
+    outline: none;
+}
+
+#cursor {
+    animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+
+/* Enhanced Glitch Effect */
+.glitch {
+    position: relative;
+    display: inline-block;
+    color: rgb(0, 247, 255);
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    color: rgb(0, 247, 255);
+    clip: rect(0, 0, 0, 0);
+}
+
+.glitch::before {
+    animation: glitchTop 1s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    animation: glitchBottom 1s infinite linear alternate-reverse;
+}
+
+@keyframes glitchTop {
+    0% {
+        clip: rect(2px, 9999px, 44px, 0);
+        transform: translate(2px, -2px);
+    }
+    20% {
+        clip: rect(10px, 9999px, 56px, 0);
+        transform: translate(-2px, 0);
+    }
+    /* Continue adding keyframes as desired */
+}
+
+@keyframes glitchBottom {
+    0% {
+        clip: rect(60px, 9999px, 80px, 0);
+        transform: translate(-2px, 0);
+    }
+    20% {
+        clip: rect(40px, 9999px, 60px, 0);
+        transform: translate(0, 2px);
+    }
+    /* Continue adding keyframes as desired */
+}
+
+/* Scrollbar customization for a retro look */
+#bbs-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+#bbs-content::-webkit-scrollbar-track {
+    background: black;
+}
+
+#bbs-content::-webkit-scrollbar-thumb {
+    background: rgb(0, 247, 255);
+}
+
+@media (max-width: 600px) {
+    #container {
+        width: 95%; /* Slightly smaller on mobile for some padding */
+        margin-top: 10px; /* Less space at the top on mobile */
+    }
+    #bbs-content, #input-line {
+        font-size: 14px;
+    }
+}

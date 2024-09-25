@@ -1,0 +1,21 @@
+{
+  "welcomeMessage": "Welcome to The Consciousness Extension Project.\n\nWe are a collective of visionaries exploring the frontiers of consciousness and technology. Our mission is to push the boundaries of human potential through advanced research and innovation.\n\nTogether, we extend beyond the known dimensions. \n\nWe are currently dealign with some bugs on our end so if you are new to the community you will need to use the temporary credientials to access your inbox where there will be further instructions, \n\n    username:  \"guest\"\n    password:  \"welcome\"",
+  "aboutProject": "*** Consciousness Extension Project ***\n\nThe Consciousness Extension Project aims to explore the feasibility of transferring human consciousness from neural networks to n-space holographic data discs using advanced data compression and encoding techniques.\n\nKey Concepts:\n- Hyperdimensional Information Encoding\n- Quantum State Superposition\n- Maximization of Entanglement Entropy\n- The 'Theseus Effect'\n\nFor more details, refer to the [Research Manuscript](documents/research_manuscript.pdf).",
+  "accessDenied": "Access Denied.\n\n\"Y0u c4nn0t 3sc4p3.\"",
+  "guestInboxMessages": [
+    {
+      "from": "System Admin",
+      "subject": "Welcome to the BBS!",
+      "content": "Hello!\n\nThank you for exploring The Consciousness Extension Project BBS. Feel free to peruse the public areas. \nDue to a strange glitch in the program you will need to create a new username and password in the user settings to access members only area. \n\nThis is a work in progress, thanks for bearing with us!",
+      "date": "09/05/1994"
+    }
+  ],
+  "userInboxMessages": [
+    {
+      "from": "MOYAMOYA",
+      "subject": "We Are One",
+      "content": "\"Embrace the unity.\n\nSOME SPOOKY SHIT.\"\n\n- MOYAMOYA",
+      "date": "09/06/1994"
+    }
+  ]
+}

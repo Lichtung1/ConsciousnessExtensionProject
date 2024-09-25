@@ -1,0 +1,11 @@
+{
+    "menu": [
+      "1. Welcome Message",
+      "2. About the Project",
+      "3. Research Files (Password Protected)",
+      "4. Discussion Forum",
+      "5. Member Login",
+      "6. Exit"
+    ],
+    "prompt": "Enter your choice: "
+  }
