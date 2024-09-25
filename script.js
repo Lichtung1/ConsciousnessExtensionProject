@@ -315,10 +315,19 @@ Press Enter to join
                 }
                 break;
             case '7':
-                if (isLateNight()) {
+                if (state.loggedIn) {
+                    exitBBS(); 
+                } else if (isLateNight()) {
                     triggerNightEvent();
                 } else {
-                    displayMainMenu(); // Or handle as appropriate
+                    displayMainMenu(); 
+                }
+                break;
+            case '8': 
+                if (state.loggedIn && isLateNight()) {
+                    triggerNightEvent();
+                } else {
+                    displayMainMenu(); 
                 }
                 break;
             default:
