@@ -1,21 +1,27 @@
 {
-  "welcomeMessage": "Welcome to The Consciousness Extension Project.\n\nWe are a collective of visionaries exploring the frontiers of consciousness and technology. Our mission is to push the boundaries of human potential through advanced research and innovation.\n\nTogether, we extend beyond the known dimensions. \n\nWe are currently dealign with some bugs on our end so if you are new to the community you will need to use the temporary credientials to access your inbox where there will be further instructions, \n\n    username:  \"guest\"\n    password:  \"welcome\"",
-  "aboutProject": "*** Consciousness Extension Project ***\n\nThe Consciousness Extension Project aims to explore the feasibility of transferring human consciousness from neural networks to n-space holographic data discs using advanced data compression and encoding techniques.\n\nKey Concepts:\n- Hyperdimensional Information Encoding\n- Quantum State Superposition\n- Maximization of Entanglement Entropy\n- The 'Theseus Effect'\n\nFor more details, refer to the [Research Manuscript](documents/research_manuscript.pdf).",
+  "welcomeMessage": "Welcome to The Consciousness Extension Project.\n\nWe are pioneers at the intersection of consciousness and technology, dedicated to expanding human potential through cutting-edge research.\n\nImportant Notice: We're experiencing a system glitch. New members, please use these temporary credentials to access your inbox for further instructions:\n\n    Username: Guest\n    Password: Welcome\n\nWe appreciate your patience as we work through this glitch. Together, we'll explore beyond what are thought to be the limits of human consciousness.",
+  "aboutProject": "*** Consciousness Extension Project ***\n\nOur project explores the transfer of human consciousness to n-space holographic data discs using cutting-edge compression and encoding techniques.\n\nKey Concepts:\n- Hyperdimensional Information Encoding\n- Quantum State Superposition\n- Maximization of Entanglement Entropy\n- The 'Theseus Effect'\n\nFor more detailed information, check your inbox for an introductory message.",
   "accessDenied": "Access Denied.\n\n\"Y0u c4nn0t 3sc4p3.\"",
-  "guestInboxMessages": [
+"guestInboxMessages": [
     {
       "from": "System Admin",
       "subject": "Welcome to the BBS!",
-      "content": "Hello!\n\nThank you for exploring The Consciousness Extension Project BBS. Feel free to peruse the public areas. \nDue to a strange glitch in the program you will need to create a new username and password in the user settings to access members only area. \n\nThis is a work in progress, thanks for bearing with us!",
+      "content": "Welcome to The Consciousness Extension Project BBS.\n\nWe're glad you're here. Feel free to explore our public areas, which offer insights into our groundbreaking research.\n\nImportant Note: Due to an unexpected system glitch, all users (including existing members) need to create new login credentials in the User Settings to access restricted areas.\n\nWe apologize for any inconvenience and appreciate your understanding as we work to resolve this issue. Your participation is valuable to our project's advancement.\n\nIf you need assistance, please don't hesitate to contact our support team. Thank you for your interest in our work!",
       "date": "09/05/1994"
     }
   ],
   "userInboxMessages": [
     {
-      "from": "MOYAMOYA",
-      "subject": "We Are One",
-      "content": "\"Embrace the unity.\n\nSOME SPOOKY SHIT.\"\n\n- MOYAMOYA",
-      "date": "09/06/1994"
+      "from": "Project Director",
+      "subject": "Detailed Project Information",
+      "content": "Thank you for your interest in the Consciousness Extension Project.\n\nOur project aims to explore the feasibility of transferring human consciousness from neural networks to n-space holographic data discs using advanced data compression and encoding techniques.\n\nAccess to the comprehensive Research Manuscript is restricted to verified members who have demonstrated significant scholarly contributions in relevant fields. Eligibility is determined through peer review of applicants' published works, research methodologies, and academic credentials. This selective process ensures a collaborative environment of high-caliber researchers committed to advancing the frontiers of this specialized domain.\n\nFor inquiries regarding the vetting process and access privileges, please submit your curriculum vitae and a brief research proposal to the Project Review Committee.\n\nWe look forward to potentially collaborating with you on this groundbreaking initiative.",
+      "date": "09/07/1994"
+    },
+    {
+      "from": "M̷̖̖̘̑Ò̷͚̱͔̈́Y̶̹͐̍̕[REDACTED]̶͓̓̕Y̷̱͗̊͜A̶̢̛̯̿",
+      "subject": "Access Request Acknowledged",
+      "date": "${currentDate}",
+      "content": "Your interest in restricted files has been noted.\n\nTo proceed, demonstrate your comprehension:\n\n1. Review the cautionary note of [Hyperdimensional Information Encoding paper](/documents/research_manuscript.pdf)\n2. Consider the true nature of our reality as unveiled [here.](/documents/hexadecimal_substructure.pdf)\n3. 636F6E74726164696374696F6E206F66206964656E74697479\n\nOnce understood, speak the truth quietly to yourself.\n\nKnowledge alters perception irreversibly.\n\n- M̷̖̖̘̑Ò̷͚̱͔̈́Y̶̹͐̍̕[REDACTED]̶͓̓̕Y̷̱͗̊͜A̶̢̛̯̿"
     }
   ]
 }

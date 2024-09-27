@@ -1,0 +1,15 @@
+{
+    "moyamoya_dialogue": [
+      {
+        "id": 1,
+        "message": "HONK HONK HONK HONK",
+        "require_response": true
+      },
+      {
+        "id": 2,
+        "message": "[Transfer initiated. System resources redirecting. New processes detected.]",
+        "require_response": false,
+        "trigger_event": "system_takeover"
+      }
+    ]
+  }

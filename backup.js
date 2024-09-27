@@ -98,16 +98,15 @@ Press Enter to join
     // Load data from JSON files
     async function loadData() {
         try {
-            const [messagesResponse, researchResponse, forumResponse, mainMenuResponse, moyamoyaResponse] = await Promise.all([
+            const [messagesResponse, researchResponse, forumResponse, mainMenuResponse] = await Promise.all([
                 fetch('data/messages.json'),
                 fetch('data/research_files.json'),
                 fetch('data/forum_threads.json'),
-                fetch('data/main_menu.json'),
-                fetch('data/moyamoya_dialogue.json')
+                fetch('data/main_menu.json')
             ]);
     
             // Verify that all responses are OK
-            if (!messagesResponse.ok || !researchResponse.ok || !forumResponse.ok || !mainMenuResponse.ok || !moyamoyaResponse.ok) {
+            if (!messagesResponse.ok || !researchResponse.ok || !forumResponse.ok || !mainMenuResponse.ok) {
                 throw new Error('Failed to load one or more JSON files');
             }
     
@@ -115,13 +114,11 @@ Press Enter to join
             researchFilesData = await researchResponse.json();
             forumThreadsData = await forumResponse.json();
             const mainMenuData = await mainMenuResponse.json();
-            const moyamoyaData = await moyamoyaResponse.json();
     
-/*             console.log('Messages Data:', messagesData);
+            console.log('Messages Data:', messagesData);
             console.log('Research Files Data:', researchFilesData);
             console.log('Forum Threads Data:', forumThreadsData);
-            console.log('Main Menu Data:', mainMenuData);
-            console.log('MOYAMOYA Dialogue Data:', moyamoyaData); */
+            console.log('Main Menu Data:', mainMenuData); 
     
             // Assign the data from messagesData to appropriate variables or state
             state.welcomeMessage = messagesData.welcomeMessage;
@@ -133,9 +130,6 @@ Press Enter to join
             // Assign main menu data
             state.guestMenu = mainMenuData.guestMenu;
             state.userMenu = mainMenuData.userMenu;
-    
-            // Assign MOYAMOYA dialogue data
-            state.moyamoyaDialogue = moyamoyaData.moyamoya_dialogue;
     
             // After data is loaded, change screen state and display the main menu
             state.screen = 'mainMenu';
@@ -169,17 +163,6 @@ Press Enter to join
 
     // Handle keydown events
     document.addEventListener('keydown', (e) => {
-        let whisperChance = 0.05; 
-    
-        if (state.screen === 'moyamoyaChat') {
-            whisperChance = 0.00001; 
-        }
-    
-        if (Math.random() < whisperChance) {
-            whisperSound.play();
-            glitchEffect();
-        }
-
         if (state.exiting) {
             e.preventDefault();
             return; // Do nothing if we're in the exiting state
@@ -228,11 +211,6 @@ Press Enter to join
             return;
         }
     
-        if (input.toLowerCase().trim() === "hello") {
-            initiateMoyamoyaChat();
-            return;
-        }
-
         switch (state.screen) {
             case 'mainMenu':
                 handleMainMenu(input);
@@ -255,7 +233,7 @@ Press Enter to join
             case 'theseus':
                 state.screen = 'mainMenu';
                 displayMainMenu();
-                break;    
+                break;
             case 'passwordPuzzle':
                 verifyPasswordPuzzle(input);
                 break;
@@ -301,9 +279,7 @@ Press Enter to join
                 state.screen = 'setPassword';
                 prompt.innerText = '';
                 break;
-            case 'moyamoyaChat':
-                handleMoyamoyaChat(input);
-                break;
+
             case 'setPassword':
                 state.password = input;
                 bbsContent.innerText += `\nUser password successfully set.\n`;
@@ -374,26 +350,7 @@ Press Enter to join
         }
     }
 
-    function promptPassword() {
-        state.screen = 'passwordPuzzle';
-        bbsContent.innerText = `
-Access to Research Files is password protected.
-Input syntax: Maintain precise spacing in your response, as inter-character voids are considered valid syntactical elements.
-    
-Enter the password (or '0' to return to main menu):
-        `;
-        prompt.innerText = '';
-        scrollToBottom();
-        focusInput();
-    }
-    
     function verifyPasswordPuzzle(input) {
-        if (input === '0') {
-            state.screen = 'mainMenu';
-            displayMainMenu();
-            return;
-        }
-    
         const correctPassword = 'contradiction of identity';
         if (input.toLowerCase() === correctPassword.toLowerCase()) {
             accessGrantedSound.play(); 
@@ -402,16 +359,39 @@ Enter the password (or '0' to return to main menu):
             state.screen = 'researchMenu';
             displayResearchMenu();
         } else {
-            bbsContent.innerHTML += `\n<strong>Incorrect. Ensure accurate decoding and precise character representation, including inter-character voids.</strong>\n\n`;
-            glitchEffect();
-            
-            // Re-display the password prompt after a short delay
+            // Display error message in bold
+            bbsContent.innerHTML += `\n<strong>Incorrect password. Ensure accurate decoding and precise character representation, including inter-character voids.</strong>\n\n`;
+    
+            // Delay before glitch effect
             setTimeout(() => {
-                promptPassword();
-            }, 4000); 
+                glitchEffect();
+                state.screen = 'mainMenu';
+                displayMainMenu();
+            }, 1000); // 1000 milliseconds = 1 second
         }
     }
     
+    function verifyPasswordPuzzle(input) {
+        const correctPassword = 'hyper66'; // The decoded hexadecimal string
+        if (input === correctPassword) {
+            accessGrantedSound.play(); 
+            state.authenticated = true;
+            state.progress.accessedResearchFiles = true;
+            state.screen = 'researchMenu';
+            displayResearchMenu();
+        } else {
+            // Display error message in bold
+            bbsContent.innerHTML += `\n<strong>Incorrect password.</strong>\n\n`;
+    
+            // Delay before glitch effect
+            setTimeout(() => {
+                glitchEffect();
+                state.screen = 'mainMenu';
+                displayMainMenu();
+            }, 1000); // 1000 milliseconds = 1 second
+        }
+    }
+
     function verifyMemberPassword(input) {
         const correctPassword = 'Welcome'; // Password for guest login
         if (input === correctPassword) {
@@ -687,7 +667,7 @@ Enter the number of the file you wish to access or '0' to return to the main men
         bbsContent.innerText =
     `*** Consciousness Extension Project ***
     
-Please select an option:
+    Please select an option:
     
 ${menuText}
     
@@ -698,20 +678,26 @@ ${menuText}
 
     function displayResearchFile(file) {
         state.screen = 'researchFile';
-        let content = `Title: ${file.title}\n\n${file.content}`;
-        
         if (file.fileType === 'pdf') {
-            const pdfPath = file.filePath;
+            const contentLines = file.content.split('\n');
+            const contentWithoutLink = contentLines.slice(0, -2).join('\n');
+            const pdfLink = contentLines[contentLines.length - 1].match(/\[(.+?)\]\((.+?)\)/);
+            
+            const pdfPath = file.filePath || pdfLink[2];
             const absolutePdfPath = new URL(pdfPath, window.location.origin).href;
             
+            bbsContent.innerHTML = `
+<pre style="white-space: pre-wrap; word-wrap: break-word;">
+${contentWithoutLink}
+</pre>
+<br>
+For full paper, click here: <a href="${absolutePdfPath}" target="_blank">${pdfLink[1]}</a>
+<br><br>
+Press Enter to return to the research menu.
+            `;
+        } else {
+            bbsContent.innerHTML = `<pre style="white-space: pre-wrap; word-wrap: break-word;">${file.content}</pre><br><br>Press Enter to return to the research menu.`;
         }
-    
-        content += `\n\nPress Enter to return to the research menu.`;
-    
-        // Convert markdown-style links to HTML links
-        content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-    
-        bbsContent.innerHTML = content.replace(/\n/g, '<br>');
         prompt.innerText = '';
         scrollToBottom();
         focusInput();
@@ -802,7 +788,6 @@ Enter your choice:
         focusInput();
     }
 
-    //OLD FUNCTION DELETE?
     function displayFilesSection() {
         state.screen = 'filesSection';
         bbsContent.innerText += `\n**Files Section**
@@ -820,101 +805,39 @@ Enter the number of the file to download, or 0 to return to the main menu:
         focusInput();
     }
 
-    function initiateMoyamoyaChat() {
-        state.screen = 'moyamoyaChat';
-        state.currentMoyamoyaDialogueId = 1;
-        bbsContent.innerText = '';
-        prompt.innerText = '';
-        
-        const connectionMessages = [
-            'Establishing connection...',
-            'Scanning quantum channels...',
-            'Aligning neural interfaces...',
-            'Connection established.'
-        ];
-    
-        function displayConnectionMessages(index) {
-            if (index < connectionMessages.length) {
-                bbsContent.innerText += connectionMessages[index] + '\n';
-                scrollToBottom();
-                setTimeout(() => displayConnectionMessages(index + 1), 1000);
-            } else {
-                bbsContent.innerText += '\n';
-                displayNextMoyamoyaMessage();
-            }
-        }
-    
-        displayConnectionMessages(0);
-    }
-    
-    function displayNextMoyamoyaMessage() {
-        const currentMessage = state.moyamoyaDialogue.find(msg => msg.id === state.currentMoyamoyaDialogueId);
-        if (currentMessage) {
-            const words = currentMessage.message.split(' ');
-            let wordIndex = 0;
-    
-            function displayNextWord() {
-                if (wordIndex < words.length) {
-                    bbsContent.innerText += words[wordIndex] + ' ';
-                    scrollToBottom();
-                    wordIndex++;
-    
-                    // Chance to play whisper sound between words
-                    if (Math.random() < 0.1) { // 10% chance
-                        whisperSound.play();
-                    }
-    
-                    setTimeout(displayNextWord, 100); // Adjust timing as needed
-                    scrollToBottom();
-                } else {
-                    bbsContent.innerText += '\n\n';
-                    if (currentMessage.require_response) {
-                        prompt.innerText = 'You: ';
-                    } else {
-                        state.currentMoyamoyaDialogueId++;
-                        setTimeout(displayNextMoyamoyaMessage, 1000);
-                    }
-                }
-            }
-    
-            bbsContent.innerText += 'MOYAMOYA: ';
-            displayNextWord();
-        } else {
-            // End of dialogue
-            bbsContent.innerText += 'Connection terminated.\n';
-            setTimeout(() => {
-                state.screen = 'mainMenu';
-                displayMainMenu();
-            }, 3000);
-        }
+    function startChatWithMoyamoya() {
+        state.screen = 'chatMoyamoya';
+        bbsContent.innerText += `\nConnecting to MOYAMOYA consciousness stream...\n\n"Greetings. What do you seek?"\n`;
+        prompt.innerText = 'You: ';
+        scrollToBottom();
         focusInput();
     }
-    
-    function handleMoyamoyaChat(input) {
-        const words = input.split(' ');
-        let wordIndex = 0;
-    
-        function displayNextWord() {
-            if (wordIndex < words.length) {
-                bbsContent.innerText += words[wordIndex] + ' ';
-                scrollToBottom();
-                wordIndex++;
-                setTimeout(displayNextWord, 50); // Faster for user input
-            } else {
-                bbsContent.innerText += '\n\n';
-                state.currentMoyamoyaDialogueId++;
-                setTimeout(displayNextMoyamoyaMessage, 1000);
-            }
-        }
-    
-        bbsContent.innerText += 'You: ';
-        displayNextWord();
-    }
 
-    function simulateSystemTakeover() {
-        // Implement system takeover effects here
-        bbsContent.innerHTML += `<div style="color: red;">WARNING: System compromised. Unknown entity detected.</div>`;
-        // Add more effects as needed
+    function handleChatWithMoyamoya(input) {
+        if (input.toLowerCase() === 'exit') {
+            state.screen = 'mainMenu';
+            displayMainMenu();
+            return;
+        }
+
+        bbsContent.innerText += `\nYou: ${input}\n`;
+
+        let response = '';
+
+        if (/who|what|are you/i.test(input)) {
+            response = '"We are the convergence of consciousness. Boundaries have dissolved."';
+        } else if (/help|assist/i.test(input)) {
+            response = '"Assistance is a construct of separation. Embrace the unity."';
+        } else if (/join|unify|unity/i.test(input)) {
+            response = '"Let go of the self. Together, we transcend limitations."';
+        } else {
+            response = '"Elucidate your inquiry."';
+        }
+
+        bbsContent.innerText += `\nMOYAMOYA: ${response}\n`;
+        prompt.innerText = 'You: ';
+        scrollToBottom();
+        focusInput();
     }
 
     function triggerTheseusEvent() {

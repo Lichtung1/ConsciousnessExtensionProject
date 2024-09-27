@@ -12,17 +12,17 @@ body {
 
 #container {
     width: 100%;
-    max-width: 600px; /* Adjust this value to match your desired content width */
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 2px solid rgb(0, 247, 255); /* Border around the entire container */
-    margin-top: 20px; /* Add some space at the top */
+    border: 2px solid rgb(0, 247, 255);
+    margin-top: 20px;
 }
 
 header {
     width: 100%;
-    border-bottom: 2px solid rgb(0, 247, 255); /* Border below the header */
+    border-bottom: 2px solid rgb(0, 247, 255);
 }
 
 #header-image {
@@ -67,6 +67,15 @@ header {
     50% { opacity: 0; }
 }
 
+/* New hyperlink styles */
+a, a:visited {
+    color: #9900FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
 
 /* Enhanced Glitch Effect */
 .glitch {
@@ -131,8 +140,8 @@ header {
 
 @media (max-width: 600px) {
     #container {
-        width: 95%; /* Slightly smaller on mobile for some padding */
-        margin-top: 10px; /* Less space at the top on mobile */
+        width: 95%;
+        margin-top: 10px;
     }
     #bbs-content, #input-line {
         font-size: 14px;
