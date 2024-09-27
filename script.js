@@ -702,8 +702,10 @@ ${menuText}
         
         if (file.fileType === 'pdf') {
             const pdfPath = file.filePath;
-            const absolutePdfPath = new URL(pdfPath, window.location.origin).href;
-            
+            const baseUrl = 'https://lichtung1.github.io/ConsciousnessExtensionProject/';
+            const absolutePdfPath = new URL(pdfPath, baseUrl).href;
+            console.log("PDF URL:", absolutePdfPath); // For debugging
+            content += `\n\n<a href="${absolutePdfPath}" target="_blank">View PDF</a>`;
         }
     
         content += `\n\nPress Enter to return to the research menu.`;
