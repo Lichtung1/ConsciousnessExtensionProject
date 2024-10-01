@@ -257,17 +257,19 @@ Press Enter to join
                 handleMainMenu(input);
                 break;
             case 'welcomeMessage':
-                // After viewing the welcome message, return to main menu
+                
                 state.screen = 'mainMenu';
                 displayMainMenu();
                 break;
             case 'aboutProject':
-                // After viewing 'About the Project', return to main menu
+                
                 state.screen = 'mainMenu';
                 displayMainMenu();
                 break;
             case 'viewThread':
-                // After viewing a thread, return to discussion forum
+                handleViewThread(input);
+                break;
+            case 'threadLocked':
                 displayDiscussionForum();
                 break;
             case 'nightEvent':
@@ -529,25 +531,48 @@ Date: ${messageDate}
     }
 
     function handleDiscussionForum(input) {
-        const choice = parseInt(input);
+        const threads = forumThreadsData.threads;
+        let choice = parseInt(input);
+    
+        if (choice > 0 && choice <= threads.length) {
+            displayThread(choice - 1); 
+            return;
+        }
+    
         if (choice === 0) {
+            state.screen = 'mainMenu';
             displayMainMenu();
-        } else if (choice > 0 && choice <= forumThreadsData.threads.length) {
-            displayThread(choice - 1); // Display the selected thread
-        } else if (state.loggedIn && choice === forumThreadsData.threads.length + 1) {
-            // Create a new thread
+            return;
+        }
+    
+        if (state.loggedIn && choice === threads.length + 1) {
+            // Create new thread
             state.screen = 'createThread';
-            bbsContent.innerText = 'Enter the title for your new thread:';
-            prompt.innerText = '';
+            state.newThread = null; 
+            handleCreateThread(''); 
+            return;
+        }
+    
+        // View selected thread
+        const thread = threads[choice - 1];
+        bbsContent.innerText = `\nThread: "${thread.title}" - by ${thread.user} on ${thread.date}\n\n${thread.content}\n\nPress Enter to return to the forum.\n`;
+        state.screen = 'viewThread';
+        prompt.innerText = '';
+    }
+
+    function handleViewThread(input) {
+        if (input.toLowerCase() === 'r') {
+            // User attempts to reply
+            bbsContent.innerText = `This thread is locked. To continue this discussion, registered memebers are asked to create a new thread in the forum.\n\nPress Enter to return to the forum.`;
+            state.screen = 'threadLocked';
         } else {
-            bbsContent.innerText += '\nInvalid input. Please try again.';
-            setTimeout(() => {
-                displayDiscussionForum();
-            }, 2000);
+            // Return to discussion forum
+            displayDiscussionForum();
         }
         scrollToBottom();
         focusInput();
     }
+
     function displayThread(threadIndex) {
         state.screen = 'viewThread';
         state.currentThread = threadIndex;
@@ -557,27 +582,24 @@ Date: ${messageDate}
         threadText += `Posted by ${thread.user} on ${thread.date}\n\n`;
         threadText += `${thread.content}\n\n`;
     
-        if (thread.replies.length > 0) {
+        if (thread.replies && thread.replies.length > 0) {
             threadText += `Replies:\n`;
             thread.replies.forEach((reply, index) => {
                 threadText += `\n${index + 1}. ${reply.user} on ${reply.date}:\n`;
                 threadText += `   ${reply.content}\n`;
             });
         } else {
-            threadText += `No replies yet.\n`;
+            threadText += `No replies.\n`;
         }
     
-        if (state.loggedIn) {
-            threadText += `\n\nEnter 'R' to reply, or press Enter to return to the forum:`;
-        } else {
-            threadText += `\n\nPress Enter to return to the forum:`;
-        }
+        threadText += `\n\nEnter 'R' to attempt to reply, or press Enter to return to the forum:`;
     
         bbsContent.innerText = threadText;
         prompt.innerText = '';
         scrollToBottom();
         focusInput();
     }
+
     function displayDiscussionForum() {
         state.screen = 'discussionForum';
         let threads = forumThreadsData.threads.slice(); // Clone the array
@@ -599,27 +621,41 @@ Date: ${messageDate}
         scrollToBottom();
         focusInput();
     }
-    function handleReplyToThread(input) {
-        if (input.trim() !== '') {
-            const newReply = {
-                user: state.username,
-                date: new Date().toLocaleDateString(),
-                content: input
-            };
-            forumThreadsData.threads[state.currentThread].replies.push(newReply);
-            bbsContent.innerText = 'Your reply has been posted.\n\nReturning to discussion forum...';
-            setTimeout(() => {
-                displayDiscussionForum();
-            }, 2000);
-        } else {
-            bbsContent.innerText = 'Reply cannot be empty. Please try again:';
+
+function handleReplyToThread(input) {
+    if (input.trim() !== '') {
+        // Check if the reply contains the special command
+        if (input.includes(`MOYAMOYA.init(${state.username})`)) {
+            initiateMoyamoyaChat();
         }
-        prompt.innerText = '';
-        scrollToBottom();
-        focusInput();
+
+        const newReply = {
+            user: state.username,
+            date: new Date().toLocaleDateString(),
+            content: input
+        };
+        forumThreadsData.threads[state.currentThread].replies.push(newReply);
+        bbsContent.innerText = 'Your reply has been posted.\n\nReturning to discussion forum...';
+        setTimeout(() => {
+            displayDiscussionForum();
+        }, 2000);
+    } else {
+        bbsContent.innerText = 'Reply cannot be empty. Please try again:';
     }
+    prompt.innerText = '';
+    scrollToBottom();
+    focusInput();
+}
 
     function handleCreateThread(input) {
+        if (!state.newThread) {
+            // Initialize new thread if it doesn't exist
+            state.newThread = { title: '', content: '', userId: state.username, date: new Date().toLocaleDateString() };
+            bbsContent.innerText = `Enter the title of your new thread:\n`;
+            prompt.innerText = '';
+            return;
+        }
+    
         if (!state.newThread.title) {
             state.newThread.title = input;
             bbsContent.innerText += `\nEnter the content of your thread:\n`;
@@ -632,15 +668,17 @@ Date: ${messageDate}
                 // Initiate Moyamoya chat
                 initiateMoyamoyaChat();
             } else {
-                // Save the new thread with user ID
-                state.newThread.userId = state.username;
+                // Save the new thread
                 forumThreadsData.threads.push(state.newThread);
                 bbsContent.innerText += `\nYour thread has been posted.\n`;
                 state.newThread = null;
                 state.screen = 'discussionForum';
-                displayDiscussionForum();
+                setTimeout(displayDiscussionForum, 2000); // Give user time to read the confirmation
             }
         }
+    
+        scrollToBottom();
+        focusInput();
     }
 
     function handleUserSettings(input) {
