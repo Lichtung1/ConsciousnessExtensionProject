@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prompt = document.getElementById('prompt');
     let inputHistory = [];
     let historyIndex = 0;
+    let inputAllowed = true;
 
     // Sound effects
     const keypressSound = new Audio('sound/keypress.mp3');
@@ -16,8 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const accessGrantedSound = new Audio('sound/sucess.mp3');
     const ambientSound = new Audio('sound/ambient.mp3');
     const whisperSound = new Audio('sound/whisper.mp3');
+    const startupSound= new Audio('sound/startupsound.mp3');
 
-    ambientSound.volume = 0.2; // Adjust volume as needed
+    ambientSound.volume = 0.5; 
+    startupSound.volume = 0.4;
     ambientSound.loop = true;
     
 
@@ -169,7 +172,11 @@ Press Enter to join
 
     // Handle keydown events
     document.addEventListener('keydown', (e) => {
-        let whisperChance = 0.05; 
+        let whisperChance = 0.01; 
+        if (!inputAllowed) {
+            e.preventDefault();
+            return;
+        }
     
         if (state.screen === 'moyamoyaChat') {
             whisperChance = 0.00001; 
@@ -218,6 +225,9 @@ Press Enter to join
     function processInput(input) {
         if (state.screen === 'welcomeScreen') {
             ambientSound.play();
+            setTimeout(() => {
+                startupSound.play();
+            }, 1000);
             loadData(); // Start loading data when user presses Enter on welcome screen
             return;
         }
@@ -545,12 +555,20 @@ Date: ${messageDate}
             prompt.innerText = '';
         } else if (!state.newThread.content) {
             state.newThread.content = input;
-            // Save the new thread
-            forumThreadsData.threads.push(state.newThread);
-            bbsContent.innerText += `\nYour thread has been posted.\n`;
-            state.newThread = null;
-            state.screen = 'discussionForum';
-            displayDiscussionForum();
+            
+            // Check if the content contains the special command
+            if (state.newThread.content.includes(`MOYAMOYA.init(${state.username})`)) {
+                // Initiate Moyamoya chat
+                initiateMoyamoyaChat();
+            } else {
+                // Save the new thread with user ID
+                state.newThread.userId = state.username;
+                forumThreadsData.threads.push(state.newThread);
+                bbsContent.innerText += `\nYour thread has been posted.\n`;
+                state.newThread = null;
+                state.screen = 'discussionForum';
+                displayDiscussionForum();
+            }
         }
     }
 
@@ -702,10 +720,8 @@ ${menuText}
         
         if (file.fileType === 'pdf') {
             const pdfPath = file.filePath;
-            const baseUrl = 'https://lichtung1.github.io/ConsciousnessExtensionProject/';
-            const absolutePdfPath = new URL(pdfPath, baseUrl).href;
-            console.log("PDF URL:", absolutePdfPath); // For debugging
-            content += `\n\n<a href="${absolutePdfPath}" target="_blank">View PDF</a>`;
+            const absolutePdfPath = new URL(pdfPath, window.location.origin).href;
+            
         }
     
         content += `\n\nPress Enter to return to the research menu.`;
@@ -827,6 +843,7 @@ Enter the number of the file to download, or 0 to return to the main menu:
         state.currentMoyamoyaDialogueId = 1;
         bbsContent.innerText = '';
         prompt.innerText = '';
+        inputAllowed = false;
         
         const connectionMessages = [
             'Establishing connection...',
@@ -855,23 +872,26 @@ Enter the number of the file to download, or 0 to return to the main menu:
             const words = currentMessage.message.split(' ');
             let wordIndex = 0;
     
+            inputAllowed = false;
+    
             function displayNextWord() {
                 if (wordIndex < words.length) {
                     bbsContent.innerText += words[wordIndex] + ' ';
                     scrollToBottom();
                     wordIndex++;
     
-                    // Chance to play whisper sound between words
-                    if (Math.random() < 0.1) { // 10% chance
+                    if (Math.random() < 0.1) {
                         whisperSound.play();
                     }
     
-                    setTimeout(displayNextWord, 100); // Adjust timing as needed
+                    setTimeout(displayNextWord, 100);
                     scrollToBottom();
                 } else {
                     bbsContent.innerText += '\n\n';
                     if (currentMessage.require_response) {
                         prompt.innerText = 'You: ';
+                        inputAllowed = true;
+                        focusInput();
                     } else {
                         state.currentMoyamoyaDialogueId++;
                         setTimeout(displayNextMoyamoyaMessage, 1000);
@@ -882,17 +902,18 @@ Enter the number of the file to download, or 0 to return to the main menu:
             bbsContent.innerText += 'MOYAMOYA: ';
             displayNextWord();
         } else {
-            // End of dialogue
             bbsContent.innerText += 'Connection terminated.\n';
             setTimeout(() => {
                 state.screen = 'mainMenu';
-                displayMainMenu();
+                simulateSystemTakeover();
             }, 3000);
         }
-        focusInput();
     }
     
     function handleMoyamoyaChat(input) {
+        if (!inputAllowed) return;
+    
+        inputAllowed = false;
         const words = input.split(' ');
         let wordIndex = 0;
     
@@ -914,9 +935,66 @@ Enter the number of the file to download, or 0 to return to the main menu:
     }
 
     function simulateSystemTakeover() {
-        // Implement system takeover effects here
-        bbsContent.innerHTML += `<div style="color: red;">WARNING: System compromised. Unknown entity detected.</div>`;
-        // Add more effects as needed
+        // Clear the screen
+        bbsContent.innerHTML = '';
+    
+        // Create a container for the image and warnings
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.alignItems = 'center';
+        container.style.height = '100%';
+    
+        // Add the image
+        const img = document.createElement('img');
+        img.src = "assets/entity_ANSCI.png";
+        img.alt = "Unknown Entity";
+        img.style.width = '100%';
+        img.style.maxHeight = '50vh';
+        img.style.objectFit = 'contain';
+        container.appendChild(img);
+    
+        // Create a container for warnings
+        const warningContainer = document.createElement('div');
+        warningContainer.style.overflow = 'auto';
+        warningContainer.style.flexGrow = '1';
+        warningContainer.style.width = '100%';
+        warningContainer.style.padding = '10px';
+        warningContainer.style.boxSizing = 'border-box';
+        container.appendChild(warningContainer);
+    
+        bbsContent.appendChild(container);
+    
+        // Disable input
+        inputAllowed = false;
+        userInput.style.display = 'none';
+        prompt.innerText = '';
+    
+        // Function to add warnings
+        let warningCount = 0;
+        function addWarning() {
+            if (warningCount < 10) {
+                const warning = document.createElement('div');
+                warning.textContent = "WARNING: System compromised. Unknown entity detected.";
+                warning.style.color = 'red';
+                warningContainer.appendChild(warning);
+                warningContainer.scrollTop = warningContainer.scrollHeight;
+                warningCount++;
+                setTimeout(addWarning, 500);
+            } else {
+                // Add the link after all warnings
+                const link = document.createElement('a');
+                link.href = "https://moyamoyawinnipeg.bandcamp.com/album/demolition-2024";
+                link.target = "_blank";
+                link.textContent = "Click here to proceed";
+                link.style.display = "block";
+                link.style.marginTop = "20px";
+                warningContainer.appendChild(link);
+            }
+        }
+    
+        // Start adding warnings
+        addWarning();
     }
 
     function triggerTheseusEvent() {
