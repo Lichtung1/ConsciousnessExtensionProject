@@ -323,6 +323,9 @@ Press Enter to join
             case 'moyamoyaChat':
                 handleMoyamoyaChat(input);
                 break;
+            case 'replyToThread':
+                handleReplyToThread(input);
+                break;
             case 'setPassword':
                 state.password = input;
                 bbsContent.innerText += `\nUser password successfully set.\n`;
@@ -526,35 +529,94 @@ Date: ${messageDate}
     }
 
     function handleDiscussionForum(input) {
-        const threads = forumThreadsData.threads;
-        let choice = parseInt(input);
-
-        if (isNaN(choice) || choice < 0 || choice > threads.length + (state.loggedIn ? 1 : 0)) {
-            bbsContent.innerText += `\nInvalid choice. Please try again.\n`;
-            displayDiscussionForum();
-            return;
-        }
-
+        const choice = parseInt(input);
         if (choice === 0) {
-            state.screen = 'mainMenu';
             displayMainMenu();
-            return;
-        }
-
-        if (state.loggedIn && choice === threads.length + 1) {
-            // Create new thread
-            bbsContent.innerText = `\nEnter the title of your new thread:\n`;
+        } else if (choice > 0 && choice <= forumThreadsData.threads.length) {
+            displayThread(choice - 1); // Display the selected thread
+        } else if (state.loggedIn && choice === forumThreadsData.threads.length + 1) {
+            // Create a new thread
             state.screen = 'createThread';
-            state.newThread = { user: state.username, date: new Date().toLocaleDateString(), content: '' };
+            bbsContent.innerText = 'Enter the title for your new thread:';
             prompt.innerText = '';
-            return;
+        } else {
+            bbsContent.innerText += '\nInvalid input. Please try again.';
+            setTimeout(() => {
+                displayDiscussionForum();
+            }, 2000);
         }
-
-        // View selected thread
-        const thread = threads[choice - 1];
-        bbsContent.innerText = `\nThread: "${thread.title}" - by ${thread.user} on ${thread.date}\n\n${thread.content}\n\nPress Enter to return to the forum.\n`;
+        scrollToBottom();
+        focusInput();
+    }
+    function displayThread(threadIndex) {
         state.screen = 'viewThread';
+        state.currentThread = threadIndex;
+        const thread = forumThreadsData.threads[threadIndex];
+    
+        let threadText = `\n**${thread.title}**\n`;
+        threadText += `Posted by ${thread.user} on ${thread.date}\n\n`;
+        threadText += `${thread.content}\n\n`;
+    
+        if (thread.replies.length > 0) {
+            threadText += `Replies:\n`;
+            thread.replies.forEach((reply, index) => {
+                threadText += `\n${index + 1}. ${reply.user} on ${reply.date}:\n`;
+                threadText += `   ${reply.content}\n`;
+            });
+        } else {
+            threadText += `No replies yet.\n`;
+        }
+    
+        if (state.loggedIn) {
+            threadText += `\n\nEnter 'R' to reply, or press Enter to return to the forum:`;
+        } else {
+            threadText += `\n\nPress Enter to return to the forum:`;
+        }
+    
+        bbsContent.innerText = threadText;
         prompt.innerText = '';
+        scrollToBottom();
+        focusInput();
+    }
+    function displayDiscussionForum() {
+        state.screen = 'discussionForum';
+        let threads = forumThreadsData.threads.slice(); // Clone the array
+    
+        // Display threads
+        let threadsText = `\n**Discussion Forum**\n\n`;
+        threads.forEach((thread, index) => {
+            threadsText += `${index + 1}. ${thread.title} - by ${thread.user} on ${thread.date}\n`;
+        });
+    
+        if (state.loggedIn) {
+            threadsText += `\n${threads.length + 1}. Create New Thread`;
+        }
+    
+        threadsText += `\n\nEnter the number of the thread to read, or 0 to return to the main menu:`;
+    
+        bbsContent.innerText = threadsText;
+        prompt.innerText = '';
+        scrollToBottom();
+        focusInput();
+    }
+    function handleReplyToThread(input) {
+        if (input.trim() !== '') {
+            const newReply = {
+                user: state.username,
+                date: new Date().toLocaleDateString(),
+                content: input
+            };
+            forumThreadsData.threads[state.currentThread].replies.push(newReply);
+            bbsContent.innerText = 'Your reply has been posted.\n\nReturning to discussion forum...';
+            setTimeout(() => {
+                displayDiscussionForum();
+            }, 2000);
+        } else {
+            bbsContent.innerText = 'Reply cannot be empty. Please try again:';
+        }
+        prompt.innerText = '';
+        scrollToBottom();
+        focusInput();
     }
 
     function handleCreateThread(input) {
@@ -739,38 +801,6 @@ ${menuText}
         content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
     
         bbsContent.innerHTML = content.replace(/\n/g, '<br>');
-        prompt.innerText = '';
-        scrollToBottom();
-        focusInput();
-    }
-    function displayDiscussionForum() {
-        state.screen = 'discussionForum';
-        let threads = forumThreadsData.threads.slice(); // Clone the array
-
-        if (state.progress.accessedResearchFiles) {
-            // Add new threads
-            threads.push({
-                title: 'Consciousness Merging',
-                user: 'MindMerge',
-                date: '08/15/1994',
-                content: '"The boundaries of self are illusionary. Has anyone else felt the pull towards unity?"',
-                replies: []
-            });
-        }
-
-        // Display threads
-        let threadsText = `\n**Discussion Forum**\n\n`;
-        threads.forEach((thread, index) => {
-            threadsText += `${index + 1}. ${thread.title} - by ${thread.user} on ${thread.date}\n`;
-        });
-
-        if (state.loggedIn) {
-            threadsText += `\n${threads.length + 1}. Create New Thread`;
-        }
-
-        threadsText += `\n\nEnter the number of the thread to read, or 0 to return to the main menu:`;
-
-        bbsContent.innerText = threadsText;
         prompt.innerText = '';
         scrollToBottom();
         focusInput();
