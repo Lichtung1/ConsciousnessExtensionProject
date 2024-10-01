@@ -102,14 +102,14 @@ Press Enter to join
     async function loadData() {
         try {
             const [messagesResponse, researchResponse, forumResponse, mainMenuResponse, moyamoyaResponse] = await Promise.all([
-                fetch('data/messages.json'),
-                fetch('data/research_files.json'),
-                fetch('data/forum_threads.json'),
-                fetch('data/main_menu.json'),
-                fetch('data/moyamoya_dialogue.json')
+                fetchNoCache('data/messages.json'),
+                fetchNoCache('data/research_files.json'),
+                fetchNoCache('data/forum_threads.json'),
+                fetchNoCache('data/main_menu.json'),
+                fetchNoCache('data/moyamoya_dialogue.json')
             ]);
     
-            // Verify that all responses are OK
+            // The rest of your function remains the same
             if (!messagesResponse.ok || !researchResponse.ok || !forumResponse.ok || !mainMenuResponse.ok || !moyamoyaResponse.ok) {
                 throw new Error('Failed to load one or more JSON files');
             }
@@ -147,6 +147,15 @@ Press Enter to join
             console.error('Error loading data:', error);
             bbsContent.innerText = 'Error loading BBS data. Please try again later.\n';
         }
+    }
+    
+    function fetchNoCache(url) {
+        return fetch(url, {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
     }
 
     // Focus on the input line
