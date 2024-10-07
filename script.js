@@ -1,6 +1,3 @@
-//cd "C:\Users\George Dyck\Desktop\MoyaMoya Web\4 BBS_V2"
-//python -m http.server 8000
-
 // BBS Script
 document.addEventListener('DOMContentLoaded', () => {
     const bbsContent = document.getElementById('bbs-content');
@@ -23,22 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     startupSound.volume = 0.4;
     ambientSound.loop = true;
     
-
-    // ANSI Art animation
-    /*
-    let ansiArtImages = ['assets/ansi_art1.jpg', 'assets/ansi_art2.jpg', 'assets/ansi_art3.jpg'];
-    let currentAnsiArtIndex = 0;
-
-    function cycleAnsiArt() {
-        const ansiArtElement = document.getElementById('ansi-art-img');
-        currentAnsiArtIndex = (currentAnsiArtIndex + 1) % ansiArtImages.length;
-        ansiArtElement.src = ansiArtImages[currentAnsiArtIndex];
-    }
-
-    // Cycle ANSI art every 10 seconds (adjust as needed)
-    setInterval(cycleAnsiArt, 10000);
-    */
-
     // Menus
     const guestMenu = [
         '1. Welcome Message',
@@ -252,6 +233,13 @@ Press Enter to join
             return;
         }
 
+        // Check for MOYAMOYA.init command
+        const moyamoyaCommand = `MOYAMOYA.init(${state.username || 'user_id'})`;
+        if (input.toLowerCase().trim() === moyamoyaCommand.toLowerCase()) {
+        initiateMoyamoyaChat();
+            return;
+        }
+            
         switch (state.screen) {
             case 'mainMenu':
                 handleMainMenu(input);
